@@ -3,17 +3,17 @@ package ecommerce.service
 import ecommerce.dto.MemberResponse
 import ecommerce.dto.TokenRequest
 import ecommerce.dto.TokenResponse
+import ecommerce.entity.MemberEntity
 import ecommerce.handler.AuthorizationException
 import ecommerce.handler.ValidationException
 import ecommerce.infrastructure.JWTProvider
-import ecommerce.model.NewMember
-import ecommerce.repository.MemberRepository
+import ecommerce.repository.MemberRepositoryJpa
 import org.springframework.stereotype.Service
 
 @Service
 class AuthService(
     private val jwtTokenProvider: JWTProvider,
-    private val memberRepository: MemberRepository,
+    private val memberRepository: MemberRepositoryJpa,
 ) {
     fun createToken(tokenRequest: TokenRequest): TokenResponse {
         val member =
@@ -35,27 +35,33 @@ class AuthService(
 
         val role = if (tokenRequest.email == "admin@example.com") "ADMIN" else "USER"
 
-        val newMember =
-            NewMember(
-                name = tokenRequest.name,
-                email = tokenRequest.email,
-                password = tokenRequest.password,
-                role = role,
+        val memberEntity =
+            memberRepository.save(
+                MemberEntity(
+                    name = tokenRequest.name,
+                    email = tokenRequest.email,
+                    password = tokenRequest.password,
+                    role = role,
+                ),
             )
 
-        val member = memberRepository.insert(newMember)
-
-        val accessToken = jwtTokenProvider.createToken(member.email)
-
+        val accessToken = jwtTokenProvider.createToken(memberEntity.email)
         return TokenResponse(accessToken)
     }
 
     fun findMemberByToken(token: String): MemberResponse {
         jwtTokenProvider.validateToken(token)
         val email = jwtTokenProvider.getPayload(token)
+
         val member =
             memberRepository.findByEmail(email)
                 ?: throw AuthorizationException("Member not found with email: $email")
-        return MemberResponse(member.id, member.email, role = member.role, name = "John Doe")
+
+        return MemberResponse(
+            id = member.id!!,
+            email = member.email,
+            role = member.role,
+            name = member.name,
+        )
     }
 }
