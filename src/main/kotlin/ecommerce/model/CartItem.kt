@@ -1,6 +1,6 @@
 package ecommerce.model
 
-data class Cart(
+data class CartItem(
     val id: Long,
     val memberId: Long,
     val productId: Long,
