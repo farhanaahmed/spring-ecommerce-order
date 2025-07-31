@@ -19,6 +19,13 @@ internal class ProductRepositoryJpaTest
         }
 
         @Test
+        fun `count returns correct number of products`() {
+            repo.save(sampleProduct(name = "One"))
+            repo.save(sampleProduct(name = "Two"))
+            assertThat(repo.count()).isEqualTo(2)
+        }
+
+        @Test
         fun `findById returns product when id exists`() {
             val saved = repo.save(sampleProduct())
             val found = repo.findById(saved.id!!)
@@ -55,13 +62,12 @@ internal class ProductRepositoryJpaTest
             assertThat(repo.existsByName("Charlie")).isFalse()
         }
 
-//    @Test
-//    fun `unique constraint violation on duplicate name`() {
-//        repo.save(sampleProduct(name = "Duplicate"))
-//        assertThatThrownBy {
-//            repo.saveAndFlush(sampleProduct(name = "Duplicate"))
-//        }.isInstanceOf(DataIntegrityViolationException::class.java)
-//    }
+        @Test
+        fun `should update existing product`() {
+            val saved = repo.save(sampleProduct())
+            saved.name = "Updated Product"
+            assertThat(saved.name).isEqualTo("Updated Product")
+        }
 
         @Test
         fun `delete removes the product`() {
@@ -70,14 +76,6 @@ internal class ProductRepositoryJpaTest
             assertThat(repo.existsById(saved.id!!)).isFalse()
         }
 
-        @Test
-        fun `count returns correct number of products`() {
-            repo.save(sampleProduct(name = "One"))
-            repo.save(sampleProduct(name = "Two"))
-            assertThat(repo.count()).isEqualTo(2)
-        }
-
-        // helper -----------------------------------------------------------------
         private fun sampleProduct(
             name: String = "Test Product",
             price: Double = 9.99,
