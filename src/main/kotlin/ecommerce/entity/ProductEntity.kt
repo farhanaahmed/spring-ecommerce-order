@@ -17,7 +17,7 @@ class ProductEntity(
     val id: Long? = null,
     @field:NotBlank
     @Column(nullable = false, unique = true)
-    val name: String,
+    var name: String,
     @field:Positive
     @Column(nullable = false)
     val price: Double,
