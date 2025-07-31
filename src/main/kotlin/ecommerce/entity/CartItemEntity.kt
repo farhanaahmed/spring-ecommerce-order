@@ -7,23 +7,20 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
-import jakarta.persistence.OneToMany
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
+import jakarta.validation.constraints.Positive
 
 @Entity
-@Table(name = "member")
-class MemberEntity(
+@Table(name = "cart_item")
+class CartItemEntity(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    @Column(nullable = false, unique = true)
-    val email: String,
+    // --- owner side: cart-item → product (many cart items can refer to the same product)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "product_id", nullable = false)
+    val product: ProductEntity,
+    @field:Positive
     @Column(nullable = false)
-    val password: String,
-    @Column(nullable = false)
-    val role: String,
-    @Column(nullable = false)
-    var name: String,
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = true)
-    val products: MutableList<ProductEntity> = mutableListOf(),
+    var quantity: Int,
 )

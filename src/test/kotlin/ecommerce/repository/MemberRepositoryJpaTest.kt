@@ -10,6 +10,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 class MemberRepositoryJpaTest(
     @Autowired
     private val repo: MemberRepositoryJpa,
+    @Autowired
+    private val cartRepositoryJpa: CartRepositoryJpa,
 ) {
     @Test
     fun `save persists and assigns id`() {
