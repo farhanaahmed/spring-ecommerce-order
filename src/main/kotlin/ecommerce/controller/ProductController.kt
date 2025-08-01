@@ -1,11 +1,16 @@
 package ecommerce.controller
 
 import ecommerce.dto.ProductRequest
+import ecommerce.entity.ProductEntity
 import ecommerce.model.Product
 import ecommerce.repository.ProductStore
 import ecommerce.service.ProductService
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
 import java.net.URI
 
@@ -77,5 +83,26 @@ class ProductController(
         val product = productStore.findById(id)
         model.addAttribute("product", product)
         return "edit_product_form"
+    }
+
+    @GetMapping("/?page=1&size=10")
+    fun getAllProducts(
+        @PageableDefault(size = 10, sort = ["name"]) pageable: Pageable,
+    ): Page<ProductEntity> {
+        return productService.getAllProducts(
+            page = pageable.pageNumber,
+            size = pageable.pageSize,
+            sortBy = pageable.sort.firstOrNull()?.property ?: "name",
+            direction = pageable.sort.firstOrNull()?.direction ?: Sort.Direction.ASC,
+        )
+    }
+
+    @GetMapping("/price")
+    fun getByPrice(
+        @RequestParam price: Double,
+        @RequestParam page: Int,
+        @RequestParam size: Int,
+    ): Page<ProductEntity> {
+        return productService.getProductsByPrice(price, page, size)
     }
 }
