@@ -3,15 +3,21 @@ package ecommerce.service
 import ecommerce.dto.CartItem
 import ecommerce.dto.MemberResponse
 import ecommerce.dto.TopProductStatResponse
+import ecommerce.entity.CartItemEntity
+import ecommerce.repository.CartItemRepositoryJpa
 import ecommerce.repository.CartRepository
 import ecommerce.repository.ProductStore
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
 @Service
 class CartService(
     private val cartRepository: CartRepository,
     @Qualifier("jdbcProductStore") private val productRepository: ProductStore,
+    private val cartItemRepositoryJpa: CartItemRepositoryJpa,
 ) {
     fun addToCart(
         memberId: Long,
@@ -39,5 +45,24 @@ class CartService(
 
     fun findMembersWithCartActivityInLast7Days(): List<MemberResponse> {
         return cartRepository.findMembersWithCartActivityInLast7Days()
+    }
+
+    fun getAllCartItems(
+        page: Int,
+        size: Int,
+        sortBy: String = "created_at",
+        direction: Sort.Direction = Sort.Direction.ASC,
+    ): Page<CartItemEntity> {
+        val pageable = PageRequest.of(page, size, Sort.by(direction, sortBy))
+        return cartItemRepositoryJpa.findAll(pageable)
+    }
+
+    fun getItemsByQuantity(
+        quantity: Int,
+        page: Int,
+        size: Int,
+    ): Page<CartItemEntity> {
+        val pageable = PageRequest.of(page, size)
+        return cartItemRepositoryJpa.findAllByQuantity(quantity, pageable)
     }
 }
