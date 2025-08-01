@@ -8,7 +8,6 @@ import ecommerce.repository.ProductStore
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Slice
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
@@ -47,14 +46,5 @@ class ProductService(
     ): Page<ProductEntity> {
         val pageable = PageRequest.of(page, size)
         return productRepositoryJpa.findAllByPrice(price, pageable)
-    }
-
-    fun getPriceSlice(
-        price: Double,
-        page: Int,
-        size: Int,
-    ): Slice<ProductEntity> {
-        val pageable = PageRequest.of(page, size)
-        return productRepositoryJpa.findByPriceGreaterThan(price, pageable)
     }
 }
