@@ -84,8 +84,8 @@ class CartControllerTest {
     fun `should return cart items`() {
         val cartItems =
             listOf(
-                CartItem(productId = 1L, name = "Item1", price = 500, quantity = 2),
-                CartItem(productId = 2L, name = "Item2", price = 1000, quantity = 1),
+                CartItem(productId = 1L, name = "Item1", price = 500.0, quantity = 2),
+                CartItem(productId = 2L, name = "Item2", price = 1000.0, quantity = 1),
             )
 
         `when`(cartService.getCartItems(memberResponse.id)).thenReturn(cartItems)

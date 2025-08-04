@@ -44,7 +44,7 @@ class CartRepository(private val jdbcTemplate: JdbcTemplate) {
             CartItem(
                 productId = rs.getLong("product_id"),
                 name = rs.getString("name"),
-                price = rs.getInt("price"),
+                price = rs.getDouble("price"),
                 quantity = rs.getInt("quantity"),
             )
         }, memberId)
@@ -68,8 +68,8 @@ class CartRepository(private val jdbcTemplate: JdbcTemplate) {
         return jdbcTemplate.query(sql) { rs, _ ->
             TopProductStatResponse(
                 name = rs.getString("product_name"),
-                count = rs.getInt("times_added"),
-                lastAddedAt = rs.getTimestamp("most_recent_added_time"),
+                count = rs.getLong("times_added"),
+                lastAddedAt = rs.getTimestamp("most_recent_added_time").toLocalDateTime(),
             )
         }
     }

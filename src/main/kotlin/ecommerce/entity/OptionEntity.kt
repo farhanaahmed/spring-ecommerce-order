@@ -16,7 +16,7 @@ import jakarta.validation.constraints.Size
     name = "option",
     // uniqueConstraints = [UniqueConstraint(columnNames = ["product_id", "name"])],
 )
-class OptionEntity(
+open class OptionEntity(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
     @field:Size(max = 50)

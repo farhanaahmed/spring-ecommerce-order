@@ -6,8 +6,7 @@ import ecommerce.dto.TopProductStatResponse
 import ecommerce.entity.CartItemEntity
 import ecommerce.repository.CartItemRepositoryJpa
 import ecommerce.repository.CartRepository
-import ecommerce.repository.ProductStore
-import org.springframework.beans.factory.annotation.Qualifier
+import ecommerce.repository.ProductRepositoryJpa
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -16,14 +15,14 @@ import org.springframework.stereotype.Service
 @Service
 class CartService(
     private val cartRepository: CartRepository,
-    @Qualifier("jdbcProductStore") private val productRepository: ProductStore,
+    private val productRepositoryJpa: ProductRepositoryJpa,
     private val cartItemRepositoryJpa: CartItemRepositoryJpa,
 ) {
     fun addToCart(
         memberId: Long,
         productId: Long,
     ) {
-        productRepository.findById(productId)
+        productRepositoryJpa.findById(productId)
             ?: throw NoSuchElementException("Product not found")
         cartRepository.add(memberId, productId)
     }

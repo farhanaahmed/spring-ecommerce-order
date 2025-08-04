@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.sql.Timestamp
+import java.time.LocalDateTime
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -46,12 +46,12 @@ class AdminControllerTest {
     fun setup() {
         topProducts =
             listOf(
-                TopProductStatResponse("Laptop", 15, Timestamp.valueOf("2025-07-27 10:00:00")),
-                TopProductStatResponse("Phone", 14, Timestamp.valueOf("2025-07-26 09:30:00")),
-                TopProductStatResponse("Tablet", 13, Timestamp.valueOf("2025-07-25 08:00:00")),
-                TopProductStatResponse("Monitor", 12, Timestamp.valueOf("2025-07-24 14:15:00")),
-                TopProductStatResponse("Keyboard", 11, Timestamp.valueOf("2025-07-23 16:45:00")),
-                TopProductStatResponse("Mouse", 10, Timestamp.valueOf("2025-07-22 11:20:00")),
+                TopProductStatResponse("Laptop", 15, LocalDateTime.parse("2025-07-27T10:00:00")),
+                TopProductStatResponse("Phone", 14, LocalDateTime.parse("2025-07-26T09:30:00")),
+                TopProductStatResponse("Tablet", 13, LocalDateTime.parse("2025-07-25T08:00:00")),
+                TopProductStatResponse("Monitor", 12, LocalDateTime.parse("2025-07-24T14:15:00")),
+                TopProductStatResponse("Keyboard", 11, LocalDateTime.parse("2025-07-23T16:45:00")),
+                TopProductStatResponse("Mouse", 10, LocalDateTime.parse("2025-07-22T11:20:00")),
             )
         doNothing().`when`(jwtProvider).validateToken(token)
         `when`(cartService.findTop5ProductsInLast30Days()).thenReturn(topProducts.take(5))
@@ -70,7 +70,7 @@ class AdminControllerTest {
             jsonPath("$.size()").value(5)
             jsonPath("$[0].name").value("Laptop")
             jsonPath("$[0].count").value(15)
-            jsonPath("$[0].lastAddedAt").value("2025-07-27T10:00:00")
+            jsonPath("$[0].localDateTime").value("2025-07-27T10:00:00")
             jsonPath("$[1].name").value("Phone")
             jsonPath("$[2].name").value("Tablet")
             jsonPath("$[3].name").value("Monitor")
