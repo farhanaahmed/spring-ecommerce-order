@@ -30,20 +30,14 @@ class ProductEntity(
     @Column(nullable = false, name = "image_url")
     val imageUrl: String,
     @OneToMany(
-        mappedBy = "product",
+        // mappedBy = "product",
         cascade = [CascadeType.MERGE, CascadeType.PERSIST],
         orphanRemoval = true,
     )
-    val options: MutableSet<OptionEntity> = mutableSetOf(),
+    @Column(nullable = false, name = "option")
+    val options: MutableList<OptionEntity> = mutableListOf(),
 ) {
     init {
         require(options.isNotEmpty()) { "A product must have at least one option" }
-    }
-
-    fun addOption(option: OptionEntity) {
-        check(options.none { it.name == option.name }) {
-            "Duplicate option name '${option.name}' within product id=$id"
-        }
-        options += option.also { it.product = this }
     }
 }

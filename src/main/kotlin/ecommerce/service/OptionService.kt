@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class ProductOptionService(
+class OptionService(
     private val productRepositoryJpa: ProductRepositoryJpa,
     private val optionRepositoryJpa: OptionRepositoryJpa,
 ) {
@@ -19,10 +19,10 @@ class ProductOptionService(
         name: String,
         price: Double,
         imageUrl: String,
-        optionDtos: List<OptionCreateDto>,
+        options: List<OptionCreateDto>,
     ): ProductEntity {
-        val options = optionDtos.map { OptionEntity(name = it.name, quantity = it.quantity) }
-        val product = ProductEntity(name = name, price = price, imageUrl = imageUrl, options = options.toMutableSet())
+        val options = options.map { OptionEntity(name = it.name, quantity = it.quantity) }
+        val product = ProductEntity(name = name, price = price, imageUrl = imageUrl, options = options.toMutableList())
         return productRepositoryJpa.save(product)
     }
 

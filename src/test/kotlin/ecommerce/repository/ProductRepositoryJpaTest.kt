@@ -1,5 +1,6 @@
 package ecommerce.repository
 
+import ecommerce.entity.OptionEntity
 import ecommerce.entity.ProductEntity
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -80,9 +81,15 @@ internal class ProductRepositoryJpaTest
             name: String = "Test Product",
             price: Double = 9.99,
             imageUrl: String = "https://example.com/img.jpg",
+            options: MutableList<OptionEntity> =
+                mutableListOf(
+                    OptionEntity(name = "Blue XL", quantity = 99),
+                    OptionEntity(name = "Red Large", quantity = 42),
+                ),
         ) = ProductEntity(
             name = name,
             price = price,
             imageUrl = imageUrl,
+            options = options,
         )
     }
