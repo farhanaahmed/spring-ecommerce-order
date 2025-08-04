@@ -1,6 +1,7 @@
 package ecommerce.dto
 
-import ecommerce.model.Product
+import ecommerce.entity.OptionEntity
+import ecommerce.entity.ProductEntity
 import ecommerce.validation.UniqueProductName
 import ecommerce.validation.ValidProductName
 import jakarta.validation.constraints.DecimalMin
@@ -14,15 +15,16 @@ data class ProductRequest(
     @field:ValidProductName
     @field:UniqueProductName
     val name: String,
-    @field:DecimalMin("0.01", message = "Price must be greater than 0")
+    @field:DecimalMin("0.01", message = "Price must be positive")
     val price: Double,
     @field:Pattern(
         regexp = "^(http://|https://).*$",
         message = "Image URL must start with http:// or https://",
     )
     val imageUrl: String,
+    val options: MutableList<OptionEntity>,
 ) {
-    fun toProduct(): Product {
-        return Product(name = name, price = price, imageUrl = imageUrl)
+    fun toProduct(): ProductEntity {
+        return ProductEntity(name = name, price = price, imageUrl = imageUrl, options = options)
     }
 }

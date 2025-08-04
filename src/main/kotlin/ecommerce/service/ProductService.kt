@@ -1,11 +1,9 @@
 package ecommerce.service
 
 import ecommerce.dto.ProductRequest
+import ecommerce.entity.OptionEntity
 import ecommerce.entity.ProductEntity
-import ecommerce.model.Product
 import ecommerce.repository.ProductRepositoryJpa
-import ecommerce.repository.ProductStore
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -13,20 +11,26 @@ import org.springframework.stereotype.Service
 
 @Service
 class ProductService(
-    @Qualifier("jdbcProductStore") private val productRepository: ProductStore,
+    // @Qualifier("jdbcProductStore") private val productRepository: ProductStore,
     private val productRepositoryJpa: ProductRepositoryJpa,
 ) {
-    fun createProduct(productRequest: ProductRequest): Product {
-        if (productRepository.existsByName(productRequest.name)) {
+    fun createProduct(productRequest: ProductRequest): ProductEntity {
+        if (productRepositoryJpa.existsByName(productRequest.name)) {
             throw IllegalArgumentException("Product with name '${productRequest.name}' already exists.")
         }
+        val options: MutableList<OptionEntity> =
+            mutableListOf(
+                OptionEntity(name = "Blue XL", quantity = 99),
+                OptionEntity(name = "Red Large", quantity = 42),
+            )
         val product =
-            Product(
+            ProductEntity(
                 name = productRequest.name,
                 price = productRequest.price,
                 imageUrl = productRequest.imageUrl,
+                options = options,
             )
-        return productRepository.save(product)
+        return productRepositoryJpa.save(product)
     }
 
     fun getAllProducts(

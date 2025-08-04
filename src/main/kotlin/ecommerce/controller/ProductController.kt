@@ -2,18 +2,15 @@ package ecommerce.controller
 
 import ecommerce.dto.ProductRequest
 import ecommerce.entity.ProductEntity
-import ecommerce.model.Product
-import ecommerce.repository.ProductStore
+import ecommerce.repository.ProductRepositoryJpa
 import ecommerce.service.ProductService
 import jakarta.validation.Valid
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
-import org.springframework.ui.Model
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -30,9 +27,10 @@ import java.net.URI
 @Controller
 @RequestMapping("/products")
 class ProductController(
-    @Qualifier("jdbcProductStore")
-    private val productStore: ProductStore,
+    // @Qualifier("jdbcProductStore")
+    // private val productStore: ProductStore,
     private val productService: ProductService,
+    private val productRepositoryJpa: ProductRepositoryJpa,
 ) {
     @PostMapping()
     @ResponseBody
@@ -46,8 +44,8 @@ class ProductController(
 
     @GetMapping()
     @ResponseBody
-    fun readAll(): List<Product> {
-        return productStore.findAll()
+    fun readAll(): List<ProductEntity> {
+        return productRepositoryJpa.findAll()
     }
 
     @PutMapping("/{id}")
@@ -57,7 +55,7 @@ class ProductController(
         @RequestBody @Valid productRequest: ProductRequest,
     ): ResponseEntity<Void> {
         val newProduct = productRequest.toProduct()
-        productStore.update(id, newProduct)
+        productRepositoryJpa.save(newProduct)
         return ResponseEntity.ok().build()
     }
 
@@ -66,24 +64,24 @@ class ProductController(
     fun delete(
         @PathVariable("id") id: Long,
     ): ResponseEntity<Void> {
-        productStore.delete(id)
+        productRepositoryJpa.deleteById(id)
         return ResponseEntity.noContent().build()
     }
 
-    @GetMapping("/new")
-    fun showCreateForm(): String {
-        return "create_product_form"
-    }
+//    @GetMapping("/new")
+//    fun showCreateForm(): String {
+//        return "create_product_form"
+//    }
 
-    @GetMapping("/edit/{id}")
-    fun showUpdateForm(
-        @PathVariable("id") id: Long,
-        model: Model,
-    ): String {
-        val product = productStore.findById(id)
-        model.addAttribute("product", product)
-        return "edit_product_form"
-    }
+//    @GetMapping("/edit/{id}")
+//    fun showUpdateForm(
+//        @PathVariable("id") id: Long,
+//        model: Model,
+//    ): String {
+//        val product = productRepositoryJpa.findById(id)
+//        model.addAttribute("product", product)
+//        return "edit_product_form"
+//    }
 
     @GetMapping("/?page=1&size=10")
     fun getAllProducts(
