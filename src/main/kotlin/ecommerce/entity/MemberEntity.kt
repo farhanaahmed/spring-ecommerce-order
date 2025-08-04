@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToMany
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 
 @Entity
@@ -26,4 +27,12 @@ class MemberEntity(
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = true)
     val products: MutableList<ProductEntity> = mutableListOf(),
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+        name = "id",
+        referencedColumnName = "member_id",
+        insertable = false,
+        updatable = false,
+    )
+    val cart: CartEntity? = null,
 )
