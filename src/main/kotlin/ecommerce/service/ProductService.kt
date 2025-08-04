@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class ProductService(
-    // @Qualifier("jdbcProductStore") private val productRepository: ProductStore,
     private val productRepositoryJpa: ProductRepositoryJpa,
 ) {
     fun createProduct(productRequest: ProductRequest): ProductEntity {

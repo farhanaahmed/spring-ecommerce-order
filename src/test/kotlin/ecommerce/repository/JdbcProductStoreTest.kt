@@ -19,7 +19,6 @@ class JdbcProductStoreTest {
     @BeforeEach
     fun setUp() {
         productStore = JdbcProductStore(jdbcTemplate)
-        // Assume schema.sql and data.sql initialize table and data externally
     }
 
     @Test

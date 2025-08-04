@@ -6,34 +6,29 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import jakarta.validation.constraints.Max
-import jakarta.validation.constraints.Min
-import jakarta.validation.constraints.Pattern
-import jakarta.validation.constraints.Size
 
 @Entity
 @Table(
     name = "option",
-    // uniqueConstraints = [UniqueConstraint(columnNames = ["product_id", "name"])],
 )
 open class OptionEntity(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    @field:Size(max = 50)
-    @field:Pattern(
-        regexp = "^[\\p{L}\\p{N}\\s()\\[\\]+\\-&/_]*\$",
-        message = "Invalid characters in option name",
-    )
     @Column(nullable = false)
     var name: String,
-    @field:Min(1) @field:Max(99_999_999)
     @Column(nullable = false)
     var quantity: Long,
 ) {
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "product_id", nullable = false)
-//    lateinit var product: ProductEntity
-//        internal set
+    init {
+        require(name.length <= 50) { "name must not exceed 50 characters" }
+        require(name.matches(Regex("^[\\p{L}\\p{N}\\s()\\[\\]+\\-&/_]*\$"))) {
+            "Invalid characters in option name"
+        }
+
+        require(quantity in 1..99_999_999) {
+            "quantity must be between 1 and 99,999,999"
+        }
+    }
 
     fun decreaseQuantity(amount: Long) {
         require(amount > 0) { "Amount must be positive" }

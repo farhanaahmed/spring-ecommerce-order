@@ -21,7 +21,6 @@ open class ProductEntity(
     @Column(nullable = false, name = "image_url")
     val imageUrl: String,
     @OneToMany(
-        // mappedBy = "product",
         cascade = [CascadeType.MERGE, CascadeType.PERSIST],
         orphanRemoval = true,
     )

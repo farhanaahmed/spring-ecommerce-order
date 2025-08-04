@@ -27,8 +27,6 @@ import java.net.URI
 @Controller
 @RequestMapping("/products")
 class ProductController(
-    // @Qualifier("jdbcProductStore")
-    // private val productStore: ProductStore,
     private val productService: ProductService,
     private val productRepositoryJpa: ProductRepositoryJpa,
 ) {
@@ -67,21 +65,6 @@ class ProductController(
         productRepositoryJpa.deleteById(id)
         return ResponseEntity.noContent().build()
     }
-
-//    @GetMapping("/new")
-//    fun showCreateForm(): String {
-//        return "create_product_form"
-//    }
-
-//    @GetMapping("/edit/{id}")
-//    fun showUpdateForm(
-//        @PathVariable("id") id: Long,
-//        model: Model,
-//    ): String {
-//        val product = productRepositoryJpa.findById(id)
-//        model.addAttribute("product", product)
-//        return "edit_product_form"
-//    }
 
     @GetMapping("/?page=1&size=10")
     fun getAllProducts(
