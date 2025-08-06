@@ -1,7 +1,6 @@
 package ecommerce.service
 
 import ecommerce.dto.ProductRequest
-import ecommerce.entity.Option
 import ecommerce.entity.Product
 import ecommerce.repository.ProductRepositoryJpa
 import org.springframework.data.domain.Page
@@ -17,17 +16,12 @@ class ProductService(
         if (productRepositoryJpa.existsByName(productRequest.name)) {
             throw IllegalArgumentException("Product with name '${productRequest.name}' already exists.")
         }
-        val options: MutableList<Option> =
-            mutableListOf(
-                Option(name = "Blue XL", quantity = 99),
-                Option(name = "Red Large", quantity = 42),
-            )
         val product =
             Product(
                 name = productRequest.name,
                 price = productRequest.price,
                 imageUrl = productRequest.imageUrl,
-                options = options,
+                options = productRequest.options,
             )
         return productRepositoryJpa.save(product)
     }
