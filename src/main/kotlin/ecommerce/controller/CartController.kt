@@ -52,7 +52,7 @@ class CartController(
         return cartService.getCart(member.id)
     }
 
-    @GetMapping("/?page=1&size=10")
+    @GetMapping("/paged")
     fun getCartItems(
         @PageableDefault(size = 10, sort = ["created_at"]) pageable: Pageable,
         @LoginMember member: MemberResponse,

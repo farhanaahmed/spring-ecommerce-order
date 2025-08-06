@@ -28,7 +28,7 @@ import java.net.URI
 class ProductController(
     private val productService: ProductService,
 ) {
-    @PostMapping()
+    @PostMapping
     @ResponseBody
     fun create(
         @Valid
@@ -38,7 +38,7 @@ class ProductController(
         return ResponseEntity.created(URI.create("/products/${product.id}")).build()
     }
 
-    @GetMapping()
+    @GetMapping
     @ResponseBody
     fun readAll(): List<Product> {
         return productService.getAllProductsUnpaged()
@@ -63,7 +63,7 @@ class ProductController(
         return ResponseEntity.noContent().build()
     }
 
-    @GetMapping("/?page=1&size=10")
+    @GetMapping("/paged")
     fun getAllProducts(
         @PageableDefault(size = 10, sort = ["name"]) pageable: Pageable,
     ): Page<Product> {
