@@ -2,7 +2,6 @@ package ecommerce.controller
 
 import ecommerce.dto.ProductRequest
 import ecommerce.entity.Product
-import ecommerce.repository.ProductRepositoryJpa
 import ecommerce.service.ProductService
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
@@ -28,7 +27,6 @@ import java.net.URI
 @RequestMapping("/products")
 class ProductController(
     private val productService: ProductService,
-    private val productRepositoryJpa: ProductRepositoryJpa,
 ) {
     @PostMapping()
     @ResponseBody
@@ -43,7 +41,7 @@ class ProductController(
     @GetMapping()
     @ResponseBody
     fun readAll(): List<Product> {
-        return productRepositoryJpa.findAll()
+        return productService.getAllProductsUnpaged()
     }
 
     @PutMapping("/{id}")
@@ -52,8 +50,7 @@ class ProductController(
         @PathVariable("id") id: Long,
         @RequestBody @Valid productRequest: ProductRequest,
     ): ResponseEntity<Void> {
-        val newProduct = productRequest.toProduct()
-        productRepositoryJpa.save(newProduct)
+        productService.updateProduct(id, productRequest)
         return ResponseEntity.ok().build()
     }
 
@@ -62,7 +59,7 @@ class ProductController(
     fun delete(
         @PathVariable("id") id: Long,
     ): ResponseEntity<Void> {
-        productRepositoryJpa.deleteById(id)
+        productService.deleteProduct(id)
         return ResponseEntity.noContent().build()
     }
 

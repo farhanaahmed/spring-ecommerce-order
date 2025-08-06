@@ -17,9 +17,9 @@ open class Product(
     @Column(nullable = false, unique = true)
     var name: String,
     @Column(nullable = false)
-    val price: Double,
+    var price: Double,
     @Column(nullable = false, name = "image_url")
-    val imageUrl: String,
+    var imageUrl: String,
     @OneToMany(
         cascade = [CascadeType.MERGE, CascadeType.PERSIST],
         orphanRemoval = true,

@@ -42,6 +42,10 @@ class ProductService(
         return productRepositoryJpa.findAll(pageable)
     }
 
+    fun getAllProductsUnpaged(): List<Product> {
+        return productRepositoryJpa.findAll()
+    }
+
     fun getProductsByPrice(
         price: Double,
         page: Int,
@@ -49,5 +53,27 @@ class ProductService(
     ): Page<Product> {
         val pageable = PageRequest.of(page, size)
         return productRepositoryJpa.findAllByPrice(price, pageable)
+    }
+
+    fun updateProduct(
+        id: Long,
+        productRequest: ProductRequest,
+    ) {
+        val existingProduct =
+            productRepositoryJpa.findById(id)
+                .orElseThrow { IllegalArgumentException("Product with id $id not found.") }
+
+        existingProduct.name = productRequest.name
+        existingProduct.price = productRequest.price
+        existingProduct.imageUrl = productRequest.imageUrl
+
+        productRepositoryJpa.save(existingProduct)
+    }
+
+    fun deleteProduct(id: Long) {
+        if (!productRepositoryJpa.existsById(id)) {
+            throw IllegalArgumentException("Product with id $id does not exist.")
+        }
+        productRepositoryJpa.deleteById(id)
     }
 }
