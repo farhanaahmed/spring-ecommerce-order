@@ -20,13 +20,13 @@ open class Option(
     var quantity: Long,
 ) {
     init {
-        require(name.length <= 50) { "name must not exceed 50 characters" }
+        require(name.length <= 50) { "Name must not exceed 50 characters" }
         require(name.matches(Regex("^[\\p{L}\\p{N}\\s()\\[\\]+\\-&/_]*\$"))) {
             "Invalid characters in option name"
         }
 
         require(quantity in 1..99_999_999) {
-            "quantity must be between 1 and 99,999,999"
+            "Quantity must be between 1 and 99,999,999"
         }
     }
 
