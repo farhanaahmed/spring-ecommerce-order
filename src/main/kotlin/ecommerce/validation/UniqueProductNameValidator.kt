@@ -1,20 +1,18 @@
 package ecommerce.validation
 
-import ecommerce.repository.ProductStore
+import ecommerce.repository.ProductRepositoryJpa
 import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 
 @Component
 class UniqueProductNameValidator(
-    @Qualifier("jdbcProductStore")
-    private val productStore: ProductStore,
+    private val productRepositoryJpa: ProductRepositoryJpa,
 ) : ConstraintValidator<UniqueProductName, String> {
     override fun isValid(
         value: String,
         context: ConstraintValidatorContext?,
     ): Boolean {
-        return productStore.findByName(value) == null
+        return productRepositoryJpa.findByName(value) == null
     }
 }
