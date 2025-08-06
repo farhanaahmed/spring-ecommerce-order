@@ -13,7 +13,7 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "member")
-open class MemberEntity(
+open class Member(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
     @Column(nullable = false, unique = true)
@@ -26,7 +26,7 @@ open class MemberEntity(
     var name: String,
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = true)
-    val products: MutableList<ProductEntity> = mutableListOf(),
+    val products: MutableList<Product> = mutableListOf(),
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(
         name = "id",
@@ -34,5 +34,5 @@ open class MemberEntity(
         insertable = false,
         updatable = false,
     )
-    val cart: CartEntity? = null,
+    val cart: Cart? = null,
 )

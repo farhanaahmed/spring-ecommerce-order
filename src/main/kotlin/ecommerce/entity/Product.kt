@@ -11,7 +11,7 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "product")
-open class ProductEntity(
+open class Product(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
     @Column(nullable = false, unique = true)
@@ -25,7 +25,7 @@ open class ProductEntity(
         orphanRemoval = true,
     )
     @Column(nullable = false, name = "option")
-    val options: MutableList<OptionEntity> = mutableListOf(),
+    val options: MutableList<Option> = mutableListOf(),
 ) {
     init {
         require(name.isNotBlank()) { "Product name must not be blank" }
@@ -38,7 +38,7 @@ open class ProductEntity(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is ProductEntity) return false
+        if (other !is Product) return false
         return id == other.id
     }
 
