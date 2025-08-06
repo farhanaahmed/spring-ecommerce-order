@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "cart_item")
-open class CartItem(
+class CartItem(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
     // --- owner side: cart-item → product (many cart items can refer to the same product)
