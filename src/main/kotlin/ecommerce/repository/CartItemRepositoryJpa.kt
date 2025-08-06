@@ -1,30 +1,30 @@
 package ecommerce.repository
 
 import ecommerce.dto.TopProductStatResponse
-import ecommerce.entity.CartEntity
-import ecommerce.entity.CartItemEntity
+import ecommerce.entity.Cart
+import ecommerce.entity.CartItem
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 
-interface CartItemRepositoryJpa : JpaRepository<CartItemEntity, Long> {
+interface CartItemRepositoryJpa : JpaRepository<CartItem, Long> {
     fun findByCartAndProductId(
-        cart: CartEntity,
+        cart: Cart,
         productId: Long,
-    ): CartItemEntity?
+    ): CartItem?
 
     fun findAllByQuantity(
         quantity: Int,
         pageable: Pageable,
-    ): Page<CartItemEntity>
+    ): Page<CartItem>
 
-    override fun findAll(pageable: Pageable): Page<CartItemEntity>
+    override fun findAll(pageable: Pageable): Page<CartItem>
 
     fun findAllByCartId(
         cartId: Long,
         pageable: Pageable,
-    ): Page<CartItemEntity>
+    ): Page<CartItem>
 
     @Query(
         value = """

@@ -1,8 +1,8 @@
 package ecommerce.service
 
 import ecommerce.dto.OptionCreateDto
-import ecommerce.entity.OptionEntity
-import ecommerce.entity.ProductEntity
+import ecommerce.entity.Option
+import ecommerce.entity.Product
 import ecommerce.repository.OptionRepositoryJpa
 import ecommerce.repository.ProductRepositoryJpa
 import org.springframework.data.repository.findByIdOrNull
@@ -20,9 +20,9 @@ class OptionService(
         price: Double,
         imageUrl: String,
         options: List<OptionCreateDto>,
-    ): ProductEntity {
-        val options = options.map { OptionEntity(name = it.name, quantity = it.quantity) }
-        val product = ProductEntity(name = name, price = price, imageUrl = imageUrl, options = options.toMutableList())
+    ): Product {
+        val options = options.map { Option(name = it.name, quantity = it.quantity) }
+        val product = Product(name = name, price = price, imageUrl = imageUrl, options = options.toMutableList())
         return productRepositoryJpa.save(product)
     }
 

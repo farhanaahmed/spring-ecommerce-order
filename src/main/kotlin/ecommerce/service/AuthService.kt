@@ -3,7 +3,7 @@ package ecommerce.service
 import ecommerce.dto.MemberResponse
 import ecommerce.dto.TokenRequest
 import ecommerce.dto.TokenResponse
-import ecommerce.entity.MemberEntity
+import ecommerce.entity.Member
 import ecommerce.handler.AuthorizationException
 import ecommerce.handler.ValidationException
 import ecommerce.infrastructure.JWTProvider
@@ -35,9 +35,9 @@ class AuthService(
 
         val role = if (tokenRequest.email == "admin@example.com") "ADMIN" else "USER"
 
-        val memberEntity =
+        val member =
             memberRepository.save(
-                MemberEntity(
+                Member(
                     name = tokenRequest.name,
                     email = tokenRequest.email,
                     password = tokenRequest.password,
@@ -45,7 +45,7 @@ class AuthService(
                 ),
             )
 
-        val accessToken = jwtTokenProvider.createToken(memberEntity.email)
+        val accessToken = jwtTokenProvider.createToken(member.email)
         return TokenResponse(accessToken)
     }
 

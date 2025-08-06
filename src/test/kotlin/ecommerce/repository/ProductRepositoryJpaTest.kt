@@ -1,7 +1,7 @@
 package ecommerce.repository
 
-import ecommerce.entity.OptionEntity
-import ecommerce.entity.ProductEntity
+import ecommerce.entity.Option
+import ecommerce.entity.Product
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -81,12 +81,12 @@ internal class ProductRepositoryJpaTest
             name: String = "Test Product",
             price: Double = 9.99,
             imageUrl: String = "https://example.com/img.jpg",
-            options: MutableList<OptionEntity> =
+            options: MutableList<Option> =
                 mutableListOf(
-                    OptionEntity(name = "Blue XL", quantity = 99),
-                    OptionEntity(name = "Red Large", quantity = 42),
+                    Option(name = "Blue XL", quantity = 99),
+                    Option(name = "Red Large", quantity = 42),
                 ),
-        ) = ProductEntity(
+        ) = Product(
             name = name,
             price = price,
             imageUrl = imageUrl,

@@ -1,8 +1,8 @@
 package ecommerce.service
 
 import ecommerce.dto.ProductRequest
-import ecommerce.entity.OptionEntity
-import ecommerce.entity.ProductEntity
+import ecommerce.entity.Option
+import ecommerce.entity.Product
 import ecommerce.repository.ProductRepositoryJpa
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -13,17 +13,17 @@ import org.springframework.stereotype.Service
 class ProductService(
     private val productRepositoryJpa: ProductRepositoryJpa,
 ) {
-    fun createProduct(productRequest: ProductRequest): ProductEntity {
+    fun createProduct(productRequest: ProductRequest): Product {
         if (productRepositoryJpa.existsByName(productRequest.name)) {
             throw IllegalArgumentException("Product with name '${productRequest.name}' already exists.")
         }
-        val options: MutableList<OptionEntity> =
+        val options: MutableList<Option> =
             mutableListOf(
-                OptionEntity(name = "Blue XL", quantity = 99),
-                OptionEntity(name = "Red Large", quantity = 42),
+                Option(name = "Blue XL", quantity = 99),
+                Option(name = "Red Large", quantity = 42),
             )
         val product =
-            ProductEntity(
+            Product(
                 name = productRequest.name,
                 price = productRequest.price,
                 imageUrl = productRequest.imageUrl,
@@ -37,7 +37,7 @@ class ProductService(
         size: Int,
         sortBy: String = "name",
         direction: Sort.Direction = Sort.Direction.ASC,
-    ): Page<ProductEntity> {
+    ): Page<Product> {
         val pageable = PageRequest.of(page, size, Sort.by(direction, sortBy))
         return productRepositoryJpa.findAll(pageable)
     }
@@ -46,7 +46,7 @@ class ProductService(
         price: Double,
         page: Int,
         size: Int,
-    ): Page<ProductEntity> {
+    ): Page<Product> {
         val pageable = PageRequest.of(page, size)
         return productRepositoryJpa.findAllByPrice(price, pageable)
     }

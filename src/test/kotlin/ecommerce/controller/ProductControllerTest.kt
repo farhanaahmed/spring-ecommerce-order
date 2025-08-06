@@ -1,8 +1,8 @@
 package ecommerce.controller
 
 import ecommerce.dto.ProductRequest
-import ecommerce.entity.OptionEntity
-import ecommerce.entity.ProductEntity
+import ecommerce.entity.Option
+import ecommerce.entity.Product
 import io.restassured.RestAssured
 import io.restassured.http.ContentType
 import org.assertj.core.api.Assertions
@@ -35,8 +35,8 @@ class ProductControllerTest {
                 imageUrl = "http://localhost:8080/image/upload/product1.jpg",
                 options =
                     mutableListOf(
-                        OptionEntity(name = "Silver", quantity = 99),
-                        OptionEntity(name = "Black", quantity = 42),
+                        Option(name = "Silver", quantity = 99),
+                        Option(name = "Black", quantity = 42),
                     ),
             )
 
@@ -60,8 +60,8 @@ class ProductControllerTest {
                 imageUrl = "http://localhost:$port/image/upload/tablet.jpg",
                 options =
                     mutableListOf(
-                        OptionEntity(name = "Silver", quantity = 99),
-                        OptionEntity(name = "Black", quantity = 42),
+                        Option(name = "Silver", quantity = 99),
+                        Option(name = "Black", quantity = 42),
                     ),
             )
         RestAssured.given()
@@ -81,8 +81,8 @@ class ProductControllerTest {
                 .log().all()
                 .extract()
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value())
-        val products: List<ProductEntity> =
-            response.body().jsonPath().getList("", ProductEntity::class.java)
+        val products: List<Product> =
+            response.body().jsonPath().getList("", Product::class.java)
         assertThat(products).anyMatch { it.name == "Mini Laptop" }
     }
 
@@ -95,8 +95,8 @@ class ProductControllerTest {
                 imageUrl = "http://localhost:$port/image/upload/product1.jpg",
                 options =
                     mutableListOf(
-                        OptionEntity(name = "Silver", quantity = 99),
-                        OptionEntity(name = "Black", quantity = 42),
+                        Option(name = "Silver", quantity = 99),
+                        Option(name = "Black", quantity = 42),
                     ),
             )
 
@@ -117,8 +117,8 @@ class ProductControllerTest {
                 imageUrl = "http://localhost:$port/image/upload/product2.jpg",
                 options =
                     mutableListOf(
-                        OptionEntity(name = "Silver", quantity = 99),
-                        OptionEntity(name = "Black", quantity = 42),
+                        Option(name = "Silver", quantity = 99),
+                        Option(name = "Black", quantity = 42),
                     ),
             )
 
@@ -142,8 +142,8 @@ class ProductControllerTest {
                 imageUrl = "http://localhost:$port/image/upload/product1.jpg",
                 options =
                     mutableListOf(
-                        OptionEntity(name = "Silver", quantity = 99),
-                        OptionEntity(name = "Black", quantity = 42),
+                        Option(name = "Silver", quantity = 99),
+                        Option(name = "Black", quantity = 42),
                     ),
             )
 
@@ -175,8 +175,8 @@ class ProductControllerTest {
                 imageUrl = "http://valid-url.com/image.jpg",
                 options =
                     mutableListOf(
-                        OptionEntity(name = "Silver", quantity = 99),
-                        OptionEntity(name = "Black", quantity = 42),
+                        Option(name = "Silver", quantity = 99),
+                        Option(name = "Black", quantity = 42),
                     ),
             )
 
@@ -202,8 +202,8 @@ class ProductControllerTest {
                 imageUrl = "http://valid-url.com/image.jpg",
                 options =
                     mutableListOf(
-                        OptionEntity(name = "Silver", quantity = 99),
-                        OptionEntity(name = "Black", quantity = 42),
+                        Option(name = "Silver", quantity = 99),
+                        Option(name = "Black", quantity = 42),
                     ),
             )
 
@@ -228,8 +228,8 @@ class ProductControllerTest {
                 imageUrl = "http://valid-url.com/image.jpg",
                 options =
                     mutableListOf(
-                        OptionEntity(name = "Silver", quantity = 99),
-                        OptionEntity(name = "Black", quantity = 42),
+                        Option(name = "Silver", quantity = 99),
+                        Option(name = "Black", quantity = 42),
                     ),
             )
 
@@ -253,8 +253,8 @@ class ProductControllerTest {
                 imageUrl = "http://valid-url.com/image.jpg",
                 options =
                     mutableListOf(
-                        OptionEntity(name = "Silver", quantity = 99),
-                        OptionEntity(name = "Black", quantity = 42),
+                        Option(name = "Silver", quantity = 99),
+                        Option(name = "Black", quantity = 42),
                     ),
             )
 
@@ -279,8 +279,8 @@ class ProductControllerTest {
                 imageUrl = "http://valid-url.com/image.jpg",
                 options =
                     mutableListOf(
-                        OptionEntity(name = "Silver", quantity = 99),
-                        OptionEntity(name = "Black", quantity = 42),
+                        Option(name = "Silver", quantity = 99),
+                        Option(name = "Black", quantity = 42),
                     ),
             )
 
@@ -305,8 +305,8 @@ class ProductControllerTest {
                 imageUrl = "ftp://invalid-url.com/image.jpg",
                 options =
                     mutableListOf(
-                        OptionEntity(name = "Silver", quantity = 99),
-                        OptionEntity(name = "Black", quantity = 42),
+                        Option(name = "Silver", quantity = 99),
+                        Option(name = "Black", quantity = 42),
                     ),
             )
 
@@ -334,8 +334,8 @@ class ProductControllerTest {
                 imageUrl = "http://valid-url.com/image.jpg",
                 options =
                     mutableListOf(
-                        OptionEntity(name = "Silver", quantity = 99),
-                        OptionEntity(name = "Black", quantity = 42),
+                        Option(name = "Silver", quantity = 99),
+                        Option(name = "Black", quantity = 42),
                     ),
             )
 
@@ -361,8 +361,8 @@ class ProductControllerTest {
                 imageUrl = "http://valid-url.com/image.jpg",
                 options =
                     mutableListOf(
-                        OptionEntity(name = "Silver", quantity = 99),
-                        OptionEntity(name = "Black", quantity = 42),
+                        Option(name = "Silver", quantity = 99),
+                        Option(name = "Black", quantity = 42),
                     ),
             )
 
@@ -388,8 +388,8 @@ class ProductControllerTest {
                 imageUrl = "invalid-url",
                 options =
                     mutableListOf(
-                        OptionEntity(name = "Silver", quantity = 99),
-                        OptionEntity(name = "Black", quantity = 42),
+                        Option(name = "Silver", quantity = 99),
+                        Option(name = "Black", quantity = 42),
                     ),
             )
 

@@ -1,12 +1,12 @@
 package ecommerce.repository
 
 import ecommerce.dto.MemberResponse
-import ecommerce.entity.CartEntity
+import ecommerce.entity.Cart
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 
-interface CartRepositoryJpa : JpaRepository<CartEntity, Long> {
-    fun findCartByMemberId(memberId: Long): CartEntity?
+interface CartRepositoryJpa : JpaRepository<Cart, Long> {
+    fun findCartByMemberId(memberId: Long): Cart?
 
     @Query(
         """

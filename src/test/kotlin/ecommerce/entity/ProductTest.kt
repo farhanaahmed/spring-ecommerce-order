@@ -5,15 +5,15 @@ import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
-class ProductEntityTest {
-    private fun sampleOption() = OptionEntity(name = "Size M", quantity = 2)
+class ProductTest {
+    private fun sampleOption() = Option(name = "Size M", quantity = 2)
 
     @Test
     fun `should create ProductEntity with valid data`() {
         val options = mutableListOf(sampleOption())
 
         val product =
-            ProductEntity(
+            Product(
                 name = "T-Shirt",
                 price = 19.99,
                 imageUrl = "https://example.com/image.png",
@@ -30,7 +30,7 @@ class ProductEntityTest {
     fun `should throw error when name is blank`() {
         val exception =
             assertThrows<IllegalArgumentException> {
-                ProductEntity(
+                Product(
                     name = " ",
                     price = 19.99,
                     imageUrl = "https://example.com/image.png",
@@ -44,7 +44,7 @@ class ProductEntityTest {
     fun `should throw error when price is zero or negative`() {
         val exception =
             assertThrows<IllegalArgumentException> {
-                ProductEntity(
+                Product(
                     name = "T-Shirt",
                     price = 0.0,
                     imageUrl = "https://example.com/image.png",
@@ -58,7 +58,7 @@ class ProductEntityTest {
     fun `should throw error when imageUrl does not start with http`() {
         val exception =
             assertThrows<IllegalArgumentException> {
-                ProductEntity(
+                Product(
                     name = "T-Shirt",
                     price = 19.99,
                     imageUrl = "ftp://example.com/image.png",
@@ -72,7 +72,7 @@ class ProductEntityTest {
     fun `should throw error when options list is empty`() {
         val exception =
             assertThrows<IllegalArgumentException> {
-                ProductEntity(
+                Product(
                     name = "T-Shirt",
                     price = 19.99,
                     imageUrl = "https://example.com/image.png",
@@ -87,8 +87,8 @@ class ProductEntityTest {
         val id = 1L
         val options = mutableListOf(sampleOption())
 
-        val product1 = ProductEntity(id = id, name = "Product A", price = 10.0, imageUrl = "https://img.com", options = options)
-        val product2 = ProductEntity(id = id, name = "Product B", price = 20.0, imageUrl = "https://img.com", options = options)
+        val product1 = Product(id = id, name = "Product A", price = 10.0, imageUrl = "https://img.com", options = options)
+        val product2 = Product(id = id, name = "Product B", price = 20.0, imageUrl = "https://img.com", options = options)
 
         assertEquals(product1, product2)
         assertEquals(product1.hashCode(), product2.hashCode())
@@ -98,8 +98,8 @@ class ProductEntityTest {
     fun `should not consider two ProductEntity objects equal if IDs are different`() {
         val options = mutableListOf(sampleOption())
 
-        val product1 = ProductEntity(id = 1L, name = "Product A", price = 10.0, imageUrl = "https://img.com", options = options)
-        val product2 = ProductEntity(id = 2L, name = "Product B", price = 20.0, imageUrl = "https://img.com", options = options)
+        val product1 = Product(id = 1L, name = "Product A", price = 10.0, imageUrl = "https://img.com", options = options)
+        val product2 = Product(id = 2L, name = "Product B", price = 20.0, imageUrl = "https://img.com", options = options)
 
         assertNotEquals(product1, product2)
     }

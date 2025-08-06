@@ -3,7 +3,7 @@ package ecommerce.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import ecommerce.dto.CartRequest
 import ecommerce.dto.MemberResponse
-import ecommerce.entity.CartEntity
+import ecommerce.entity.Cart
 import ecommerce.infrastructure.JWTProvider
 import ecommerce.model.UserRole
 import ecommerce.resolver.LoginMemberArgumentResolver
@@ -109,7 +109,7 @@ class CartControllerTest {
     @Test
     fun `should return cart for authenticated member`() {
         // Given
-        val cart = CartEntity(id = 100L, memberId = memberResponse.id)
+        val cart = Cart(id = 100L, memberId = memberResponse.id)
 
         // Mock service
         `when`(cartService.getCart(memberResponse.id)).thenReturn(cart)

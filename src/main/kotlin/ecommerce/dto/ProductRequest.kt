@@ -1,7 +1,7 @@
 package ecommerce.dto
 
-import ecommerce.entity.OptionEntity
-import ecommerce.entity.ProductEntity
+import ecommerce.entity.Option
+import ecommerce.entity.Product
 import ecommerce.validation.UniqueProductName
 import ecommerce.validation.ValidProductName
 import jakarta.validation.constraints.DecimalMin
@@ -22,9 +22,9 @@ data class ProductRequest(
         message = "Image URL must start with http:// or https://",
     )
     val imageUrl: String,
-    val options: MutableList<OptionEntity>,
+    val options: MutableList<Option>,
 ) {
-    fun toProduct(): ProductEntity {
-        return ProductEntity(name = name, price = price, imageUrl = imageUrl, options = options)
+    fun toProduct(): Product {
+        return Product(name = name, price = price, imageUrl = imageUrl, options = options)
     }
 }

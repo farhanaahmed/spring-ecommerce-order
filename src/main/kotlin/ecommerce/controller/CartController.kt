@@ -3,8 +3,8 @@ package ecommerce.controller
 import ecommerce.annotations.LoginMember
 import ecommerce.dto.CartRequest
 import ecommerce.dto.MemberResponse
-import ecommerce.entity.CartEntity
-import ecommerce.entity.CartItemEntity
+import ecommerce.entity.Cart
+import ecommerce.entity.CartItem
 import ecommerce.service.CartService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -48,7 +48,7 @@ class CartController(
     @GetMapping
     fun getCart(
         @LoginMember member: MemberResponse,
-    ): CartEntity {
+    ): Cart {
         return cartService.getCart(member.id)
     }
 
@@ -56,7 +56,7 @@ class CartController(
     fun getCartItems(
         @PageableDefault(size = 10, sort = ["created_at"]) pageable: Pageable,
         @LoginMember member: MemberResponse,
-    ): Page<CartItemEntity> {
+    ): Page<CartItem> {
         return cartService.getCartItems(
             memberId = member.id,
             page = pageable.pageNumber,
@@ -71,7 +71,7 @@ class CartController(
         @RequestParam quantity: Int,
         @RequestParam page: Int,
         @RequestParam size: Int,
-    ): Page<CartItemEntity> {
+    ): Page<CartItem> {
         return cartService.getItemsByQuantity(quantity, page, size)
     }
 }

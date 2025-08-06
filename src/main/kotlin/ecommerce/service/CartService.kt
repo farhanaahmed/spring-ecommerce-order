@@ -2,8 +2,8 @@ package ecommerce.service
 
 import ecommerce.dto.MemberResponse
 import ecommerce.dto.TopProductStatResponse
-import ecommerce.entity.CartEntity
-import ecommerce.entity.CartItemEntity
+import ecommerce.entity.Cart
+import ecommerce.entity.CartItem
 import ecommerce.repository.CartItemRepositoryJpa
 import ecommerce.repository.CartRepositoryJpa
 import ecommerce.repository.ProductRepositoryJpa
@@ -28,7 +28,7 @@ class CartService(
                 ?: throw NoSuchElementException("Product not found")
 
         val carItemEntity =
-            CartItemEntity(
+            CartItem(
                 product = product,
                 cart = cart,
                 quantity = 1,
@@ -41,7 +41,7 @@ class CartService(
         return cartItemRepositoryJpa.deleteById(cartItemId)
     }
 
-    fun getCart(memberId: Long): CartEntity {
+    fun getCart(memberId: Long): Cart {
         return cartRepositoryJpa.findCartByMemberId(memberId) ?: throw NoSuchElementException("Cart not found")
     }
 
@@ -59,7 +59,7 @@ class CartService(
         size: Int,
         sortBy: String = "created_at",
         direction: Sort.Direction = Sort.Direction.ASC,
-    ): Page<CartItemEntity> {
+    ): Page<CartItem> {
         val cart = cartRepositoryJpa.findCartByMemberId(memberId) ?: throw NoSuchElementException("Cart not found")
         val pageable = PageRequest.of(page, size, Sort.by(direction, sortBy))
         return cartItemRepositoryJpa.findAllByCartId(cartId = cart.id!!, pageable)
@@ -69,7 +69,7 @@ class CartService(
         quantity: Int,
         page: Int,
         size: Int,
-    ): Page<CartItemEntity> {
+    ): Page<CartItem> {
         val pageable = PageRequest.of(page, size)
         return cartItemRepositoryJpa.findAllByQuantity(quantity, pageable)
     }

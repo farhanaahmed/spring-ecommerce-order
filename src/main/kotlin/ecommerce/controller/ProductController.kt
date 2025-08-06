@@ -1,7 +1,7 @@
 package ecommerce.controller
 
 import ecommerce.dto.ProductRequest
-import ecommerce.entity.ProductEntity
+import ecommerce.entity.Product
 import ecommerce.repository.ProductRepositoryJpa
 import ecommerce.service.ProductService
 import jakarta.validation.Valid
@@ -42,7 +42,7 @@ class ProductController(
 
     @GetMapping()
     @ResponseBody
-    fun readAll(): List<ProductEntity> {
+    fun readAll(): List<Product> {
         return productRepositoryJpa.findAll()
     }
 
@@ -69,7 +69,7 @@ class ProductController(
     @GetMapping("/?page=1&size=10")
     fun getAllProducts(
         @PageableDefault(size = 10, sort = ["name"]) pageable: Pageable,
-    ): Page<ProductEntity> {
+    ): Page<Product> {
         return productService.getAllProducts(
             page = pageable.pageNumber,
             size = pageable.pageSize,
@@ -83,7 +83,7 @@ class ProductController(
         @RequestParam price: Double,
         @RequestParam page: Int,
         @RequestParam size: Int,
-    ): Page<ProductEntity> {
+    ): Page<Product> {
         return productService.getProductsByPrice(price, page, size)
     }
 }

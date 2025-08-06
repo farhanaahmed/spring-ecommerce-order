@@ -1,6 +1,6 @@
 package ecommerce.repository
 
-import ecommerce.entity.MemberEntity
+import ecommerce.entity.Member
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,27 +13,27 @@ class MemberRepositoryJpaTest(
 ) {
     @Test
     fun `save persists and assigns id`() {
-        val sampleMemberEntity =
-            MemberEntity(
+        val sampleMember =
+            Member(
                 email = "alice@example.com",
                 password = "secret",
                 role = "USER",
                 name = "Alice",
             )
-        val saved = repo.save(sampleMemberEntity)
+        val saved = repo.save(sampleMember)
         assertThat(saved.id).isNotNull()
     }
 
     @Test
     fun `findById returns member when id exists`() {
-        val sampleMemberEntity =
-            MemberEntity(
+        val sampleMember =
+            Member(
                 email = "alice@example.com",
                 password = "secret",
                 role = "USER",
                 name = "Alice",
             )
-        val saved = repo.save(sampleMemberEntity)
+        val saved = repo.save(sampleMember)
         val found = repo.findById(saved.id!!)
         assertThat(found).isPresent
         assertThat(found.get().name).isEqualTo("Alice")
@@ -41,22 +41,22 @@ class MemberRepositoryJpaTest(
 
     @Test
     fun `should return all members`() {
-        val sampleMemberEntity1 =
-            MemberEntity(
+        val sampleMember1 =
+            Member(
                 email = "alice@example.com",
                 password = "secret",
                 role = "USER",
                 name = "Alice",
             )
-        val sampleMemberEntity2 =
-            MemberEntity(
+        val sampleMember2 =
+            Member(
                 email = "john@example.com",
                 password = "secret2",
                 role = "USER2",
                 name = "John",
             )
-        repo.save(sampleMemberEntity1)
-        repo.save(sampleMemberEntity2)
+        repo.save(sampleMember1)
+        repo.save(sampleMember2)
         val found = repo.findAll()
         assertThat(found)
             .isNotEmpty
@@ -70,14 +70,14 @@ class MemberRepositoryJpaTest(
 
     @Test
     fun `findByEmail returns member when email exists`() {
-        val sampleMemberEntity =
-            MemberEntity(
+        val sampleMember =
+            Member(
                 email = "alice@example.com",
                 password = "secret",
                 role = "USER",
                 name = "Alice",
             )
-        repo.save(sampleMemberEntity)
+        repo.save(sampleMember)
 
         val found = repo.findByEmail("alice@example.com")
 
@@ -92,14 +92,14 @@ class MemberRepositoryJpaTest(
 
     @Test
     fun `existsByEmail returns true when member with that email exists`() {
-        val sampleMemberEntity =
-            MemberEntity(
+        val sampleMember =
+            Member(
                 email = "alice@example.com",
                 password = "secret",
                 role = "USER",
                 name = "Alice",
             )
-        repo.save(sampleMemberEntity)
+        repo.save(sampleMember)
 
         assertThat(repo.existsByEmail("alice@example.com")).isTrue()
     }
@@ -113,7 +113,7 @@ class MemberRepositoryJpaTest(
     fun `deleteById should remove the member`() {
         val saved =
             repo.save(
-                MemberEntity(
+                Member(
                     email = "alice@example.com",
                     password = "secret",
                     role = "USER",
@@ -130,7 +130,7 @@ class MemberRepositoryJpaTest(
     fun `delete should remove the member`() {
         val saved =
             repo.save(
-                MemberEntity(
+                Member(
                     email = "alice@example.com",
                     password = "secret",
                     role = "USER",
