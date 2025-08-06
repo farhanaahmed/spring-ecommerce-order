@@ -5,7 +5,6 @@ import ecommerce.dto.TopProductStatResponse
 import ecommerce.entity.CartEntity
 import ecommerce.entity.CartItemEntity
 import ecommerce.repository.CartItemRepositoryJpa
-import ecommerce.repository.CartRepository
 import ecommerce.repository.CartRepositoryJpa
 import ecommerce.repository.ProductRepositoryJpa
 import org.springframework.data.domain.Page
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class CartService(
-    private val cartRepository: CartRepository,
     private val productRepositoryJpa: ProductRepositoryJpa,
     private val cartItemRepositoryJpa: CartItemRepositoryJpa,
     private val cartRepositoryJpa: CartRepositoryJpa,
