@@ -1,21 +1,23 @@
 package ecommerce.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import ecommerce.dto.CartItem
 import ecommerce.dto.CartRequest
 import ecommerce.dto.MemberResponse
+import ecommerce.entity.CartEntity
 import ecommerce.infrastructure.JWTProvider
 import ecommerce.model.UserRole
+import ecommerce.resolver.LoginMemberArgumentResolver
 import ecommerce.service.AuthService
 import ecommerce.service.CartService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.doNothing
+import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
@@ -24,8 +26,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.mockito.kotlin.any as ktAny
 
-@SpringBootTest
+@WebMvcTest(CartController::class)
 @AutoConfigureMockMvc
 class CartControllerTest {
     @Autowired
@@ -40,6 +44,9 @@ class CartControllerTest {
     @MockitoBean
     private lateinit var authService: AuthService
 
+    @MockitoBean
+    lateinit var loginMemberArgumentResolver: LoginMemberArgumentResolver
+
     @Autowired
     private lateinit var objectMapper: ObjectMapper
 
@@ -52,12 +59,31 @@ class CartControllerTest {
     fun setup() {
         doNothing().`when`(jwtProvider).validateToken(token)
         `when`(authService.findMemberByToken(token)).thenReturn(memberResponse)
+
+        `when`(loginMemberArgumentResolver.supportsParameter(ktAny())).thenReturn(true)
+        `when`(
+            loginMemberArgumentResolver.resolveArgument(
+                ktAny(),
+                ktAny(),
+                ktAny(),
+                ktAny(),
+            ),
+        ).thenReturn(memberResponse)
+
+        val cartController = CartController(cartService)
+
+        // Register it in MockMvc
+        mockMvc =
+            MockMvcBuilders
+                .standaloneSetup(cartController)
+                .setCustomArgumentResolvers(loginMemberArgumentResolver)
+                .build()
     }
 
     @Test
     fun `should add product to cart`() {
         mockMvc.perform(
-            post("/api/protected/cart")
+            post("/api/protected/cart/created")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(cartRequest)),
@@ -70,38 +96,34 @@ class CartControllerTest {
     @Test
     fun `should remove product from cart`() {
         mockMvc.perform(
-            delete("/api/protected/cart")
+            delete("/api/protected/cart/1")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(cartRequest)),
         )
             .andExpect(status().isNoContent)
 
-        verify(cartService).removeFromCart(memberResponse.id, cartRequest.productId)
+        verify(cartService).removeFromCart(cartItemId = 1)
     }
 
     @Test
-    fun `should return cart items`() {
-        val cartItems =
-            listOf(
-                CartItem(productId = 1L, name = "Item1", price = 500.0, quantity = 2),
-                CartItem(productId = 2L, name = "Item2", price = 1000.0, quantity = 1),
-            )
+    fun `should return cart for authenticated member`() {
+        // Given
+        val cart = CartEntity(id = 100L, memberId = memberResponse.id)
 
-        `when`(cartService.getCartItems(memberResponse.id)).thenReturn(cartItems)
+        // Mock service
+        `when`(cartService.getCart(memberResponse.id)).thenReturn(cart)
 
+        // When & Then
         mockMvc.perform(
             get("/api/protected/cart")
-                .header("Authorization", "Bearer $token"),
+                .header("Authorization", "Bearer $token")
+                .accept(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.size()").value(2))
-            .andExpect(jsonPath("$[0].productId").value(1))
-            .andExpect(jsonPath("$[0].name").value("Item1"))
-            .andExpect(jsonPath("$[0].price").value(500))
-            .andExpect(jsonPath("$[0].quantity").value(2))
-            .andExpect(jsonPath("$[1].productId").value(2))
+            .andExpect(jsonPath("$.id").value(cart.id))
+            .andExpect(jsonPath("$.memberId").value(cart.memberId))
 
-        verify(cartService).getCartItems(memberResponse.id)
+        verify(cartService, times(1)).getCart(memberResponse.id)
     }
 }
