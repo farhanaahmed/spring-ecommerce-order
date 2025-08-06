@@ -1,11 +1,12 @@
 package ecommerce.service
 
-import ecommerce.dto.CartItem
 import ecommerce.dto.MemberResponse
 import ecommerce.dto.TopProductStatResponse
+import ecommerce.entity.CartEntity
 import ecommerce.entity.CartItemEntity
 import ecommerce.repository.CartItemRepositoryJpa
 import ecommerce.repository.CartRepository
+import ecommerce.repository.CartRepositoryJpa
 import ecommerce.repository.ProductRepositoryJpa
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -17,43 +18,53 @@ class CartService(
     private val cartRepository: CartRepository,
     private val productRepositoryJpa: ProductRepositoryJpa,
     private val cartItemRepositoryJpa: CartItemRepositoryJpa,
+    private val cartRepositoryJpa: CartRepositoryJpa,
 ) {
     fun addToCart(
         memberId: Long,
         productId: Long,
     ) {
-        productRepositoryJpa.findById(productId)
-            ?: throw NoSuchElementException("Product not found")
-        cartRepository.add(memberId, productId)
+        val cart = cartRepositoryJpa.findCartByMemberId(memberId) ?: throw NoSuchElementException("Cart not found")
+        val product =
+            productRepositoryJpa.findById(productId).orElse(null)
+                ?: throw NoSuchElementException("Product not found")
+
+        val carItemEntity =
+            CartItemEntity(
+                product = product,
+                cart = cart,
+                quantity = 1,
+            )
+
+        cartItemRepositoryJpa.save(carItemEntity)
     }
 
-    fun removeFromCart(
-        memberId: Long,
-        productId: Long,
-    ) {
-        return cartRepository.remove(memberId, productId)
+    fun removeFromCart(cartItemId: Long) {
+        return cartItemRepositoryJpa.deleteById(cartItemId)
     }
 
-    fun getCartItems(memberId: Long): List<CartItem> {
-        return cartRepository.getCartItems(memberId)
+    fun getCart(memberId: Long): CartEntity {
+        return cartRepositoryJpa.findCartByMemberId(memberId) ?: throw NoSuchElementException("Cart not found")
     }
 
     fun findTop5ProductsInLast30Days(): List<TopProductStatResponse> {
-        return cartRepository.findTop5ProductsInLast30Days()
+        return cartItemRepositoryJpa.findTop5ProductsInLast30Days()
     }
 
     fun findMembersWithCartActivityInLast7Days(): List<MemberResponse> {
-        return cartRepository.findMembersWithCartActivityInLast7Days()
+        return cartRepositoryJpa.findMembersWithCartActivityInLast7Days()
     }
 
-    fun getAllCartItems(
+    fun getCartItems(
+        memberId: Long,
         page: Int,
         size: Int,
         sortBy: String = "created_at",
         direction: Sort.Direction = Sort.Direction.ASC,
     ): Page<CartItemEntity> {
+        val cart = cartRepositoryJpa.findCartByMemberId(memberId) ?: throw NoSuchElementException("Cart not found")
         val pageable = PageRequest.of(page, size, Sort.by(direction, sortBy))
-        return cartItemRepositoryJpa.findAll(pageable)
+        return cartItemRepositoryJpa.findAllByCartId(cartId = cart.id!!, pageable)
     }
 
     fun getItemsByQuantity(

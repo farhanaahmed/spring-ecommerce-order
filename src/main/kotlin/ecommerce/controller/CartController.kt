@@ -1,9 +1,9 @@
 package ecommerce.controller
 
 import ecommerce.annotations.LoginMember
-import ecommerce.dto.CartItem
 import ecommerce.dto.CartRequest
 import ecommerce.dto.MemberResponse
+import ecommerce.entity.CartEntity
 import ecommerce.entity.CartItemEntity
 import ecommerce.service.CartService
 import org.springframework.data.domain.Page
@@ -13,6 +13,7 @@ import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -25,38 +26,39 @@ import java.net.URI
 class CartController(
     private val cartService: CartService,
 ) {
-    @PostMapping
+    @PostMapping("/created")
     fun addToCart(
         @RequestBody request: CartRequest,
         @LoginMember member: MemberResponse,
     ): ResponseEntity<Void> {
         cartService.addToCart(member.id, request.productId)
         return ResponseEntity.created(
-            URI.create("/api/cart"),
+            URI.create("/created"),
         ).build()
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{cartItemId}")
     fun removeFromCart(
-        @RequestBody request: CartRequest,
-        @LoginMember member: MemberResponse,
+        @PathVariable cartItemId: Long,
     ): ResponseEntity<Void> {
-        cartService.removeFromCart(member.id, request.productId)
+        cartService.removeFromCart(cartItemId)
         return ResponseEntity.noContent().build()
     }
 
     @GetMapping
     fun getCart(
         @LoginMember member: MemberResponse,
-    ): List<CartItem> {
-        return cartService.getCartItems(member.id)
+    ): CartEntity {
+        return cartService.getCart(member.id)
     }
 
     @GetMapping("/?page=1&size=10")
-    fun getAllCartItems(
+    fun getCartItems(
         @PageableDefault(size = 10, sort = ["created_at"]) pageable: Pageable,
+        @LoginMember member: MemberResponse,
     ): Page<CartItemEntity> {
-        return cartService.getAllCartItems(
+        return cartService.getCartItems(
+            memberId = member.id,
             page = pageable.pageNumber,
             size = pageable.pageSize,
             sortBy = pageable.sort.firstOrNull()?.property ?: "created_at",
