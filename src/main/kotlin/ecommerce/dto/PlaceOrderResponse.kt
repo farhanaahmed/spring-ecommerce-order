@@ -1,6 +1,6 @@
 package ecommerce.dto
 
-data class PlaceOrderResponse(
+class PlaceOrderResponse(
     val orderId: Long?,
     val paymentStatus: String,
     val message: String,
