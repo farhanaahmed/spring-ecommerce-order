@@ -1,7 +1,10 @@
 package ecommerce.entity
 
+import ecommerce.enums.PaymentMethod
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -25,8 +28,9 @@ class Payment(
     val currency: String,
     @Column(nullable = false)
     val status: String,
-    @Column(nullable = true)
-    val paymentMethod: String? = null,
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true, name = "payment_method")
+    val paymentMethod: PaymentMethod? = null,
     @Column(nullable = true)
     val failureReason: String? = null,
 )

@@ -3,6 +3,7 @@ package ecommerce.infrastructure
 import ecommerce.config.StripeProperties
 import ecommerce.dto.PaymentRequest
 import ecommerce.dto.StripeIntentResponse
+import ecommerce.enums.PaymentMethod
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.AfterEach
@@ -69,7 +70,7 @@ class StripeClientTest {
             PaymentRequest(
                 amount = 999,
                 currency = "usd",
-                paymentMethod = "pm_card_visa",
+                paymentMethod = PaymentMethod.PM_CARD_VISA,
             )
 
         val resp: StripeIntentResponse = client.createAndConfirmPayment(req)
@@ -104,7 +105,7 @@ class StripeClientTest {
             PaymentRequest(
                 amount = 5000,
                 currency = "usd",
-                paymentMethod = "pm_card_chargeCustomerFail",
+                paymentMethod = PaymentMethod.PM_CARD_CHARGE_CUSTOMER_FAIL,
             )
 
         val ex =

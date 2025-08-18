@@ -1,7 +1,7 @@
 package ecommerce.dto
 
+import ecommerce.enums.PaymentMethod
 import jakarta.validation.constraints.Min
-import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 
 data class PlaceOrderRequest(
@@ -9,7 +9,7 @@ data class PlaceOrderRequest(
     val optionId: Long,
     @field:Min(1)
     val quantity: Long,
-    @field:NotBlank
-    val paymentMethod: String,
+    @field:NotNull
+    val paymentMethod: PaymentMethod,
     val currency: String = "usd",
 )

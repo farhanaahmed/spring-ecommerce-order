@@ -9,6 +9,7 @@ import ecommerce.entity.Order
 import ecommerce.entity.OrderItem
 import ecommerce.entity.Payment
 import ecommerce.enums.OrderStatus
+import ecommerce.enums.PaymentMethod
 import ecommerce.infrastructure.StripeClient
 import ecommerce.repository.CartItemRepositoryJpa
 import ecommerce.repository.CartRepositoryJpa
@@ -54,7 +55,7 @@ class OrderService(
             throw IllegalArgumentException("Payment not approved (status=${stripeRes.status}).")
         }
 
-        val orderId = persistAfterStripeSuccess(member, option.id!!, req.quantity, amountMinor, req.currency, stripeRes)
+        val orderId = persistAfterStripeSuccess(member, option.id!!, req.quantity, amountMinor, req.currency, stripeRes, req.paymentMethod)
         return PlaceOrderResponse(orderId, stripeRes.status, "Order placed and paid successfully.")
     }
 
@@ -66,6 +67,7 @@ class OrderService(
         amountMinor: Long,
         currency: String,
         stripeRes: StripeIntentResponse,
+        paymentMethod: PaymentMethod,
     ): Long {
         val option =
             optionRepository.findById(optionId)
@@ -97,7 +99,7 @@ class OrderService(
                 currency = currency,
                 status = "PAID",
                 stripeSessionId = stripeRes.id,
-                paymentMethod = "stripe",
+                paymentMethod = paymentMethod,
             ),
         )
 

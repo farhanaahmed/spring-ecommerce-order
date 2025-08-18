@@ -5,6 +5,7 @@ import ecommerce.dto.LoggedInMember
 import ecommerce.dto.PlaceOrderRequest
 import ecommerce.dto.PlaceOrderResponse
 import ecommerce.entity.Member
+import ecommerce.enums.PaymentMethod
 import ecommerce.enums.UserRole
 import ecommerce.handler.GlobalExceptionHandler
 import ecommerce.infrastructure.JWTProvider
@@ -77,7 +78,7 @@ class OrderControllerTest
                 Member(id = principal.id, name = "Jane", email = "jane@example.com", password = "pw", role = "USER")
             given(memberService.getByIdOrThrow(principal.id)).willReturn(persistedMember)
 
-            val req = PlaceOrderRequest(optionId = 1001L, quantity = 2L, currency = "usd", paymentMethod = "pm_card_visa")
+            val req = PlaceOrderRequest(optionId = 1001L, quantity = 2L, currency = "usd", paymentMethod = PaymentMethod.PM_CARD_VISA)
             val expected = PlaceOrderResponse(orderId = 555L, paymentStatus = "succeeded", message = "ok")
             given(orderService.place(persistedMember, req)).willReturn(expected)
 
@@ -105,7 +106,7 @@ class OrderControllerTest
                     optionId = 1001L,
                     quantity = 3L,
                     currency = "usd",
-                    paymentMethod = "pm_card_chargeDeclined",
+                    paymentMethod = PaymentMethod.PM_CARD_CHARGE_DECLINED,
                 )
             given(orderService.place(persistedMember, req)).willThrow(IllegalArgumentException("Payment not approved"))
 
@@ -145,7 +146,7 @@ class OrderControllerTest
                     optionId = 1L,
                     quantity = 1L,
                     currency = "usd",
-                    paymentMethod = "pm_card_visa",
+                    paymentMethod = PaymentMethod.PM_CARD_VISA,
                 )
 
             whenever(memberService.getByIdOrThrow(principal.id))
