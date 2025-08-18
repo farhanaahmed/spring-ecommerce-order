@@ -1,6 +1,6 @@
 package ecommerce.dto
 
-data class LoggedInMember(
+class LoggedInMember(
     val id: Long,
     val email: String,
     val name: String,
