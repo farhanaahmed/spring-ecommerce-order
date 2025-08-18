@@ -6,19 +6,22 @@ import ecommerce.dto.PlaceOrderRequest
 import ecommerce.dto.PlaceOrderResponse
 import ecommerce.entity.Member
 import ecommerce.enums.UserRole
+import ecommerce.handler.GlobalExceptionHandler
 import ecommerce.infrastructure.JWTProvider
-import ecommerce.repository.MemberRepositoryJpa
 import ecommerce.resolver.LoginMemberArgumentResolver
 import ecommerce.service.AuthService
+import ecommerce.service.MemberService
 import ecommerce.service.OrderService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.`when`
-import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
@@ -27,11 +30,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.util.Optional
-import org.mockito.kotlin.any as ktAny
 
 @WebMvcTest(OrderController::class)
 @AutoConfigureMockMvc
+@Import(GlobalExceptionHandler::class)
 class OrderControllerTest
     @Autowired
     constructor(
@@ -48,36 +50,36 @@ class OrderControllerTest
         private lateinit var authService: AuthService
 
         @MockitoBean
-        private lateinit var memberRepository: MemberRepositoryJpa
+        private lateinit var memberService: MemberService
 
         @MockitoBean(name = "loginMemberArgumentResolver")
         private lateinit var loginMemberArgumentResolver: LoginMemberArgumentResolver
 
-        private val member =
+        private val principal =
             LoggedInMember(id = 42L, name = "Jane", email = "jane@example.com", role = UserRole.USER.name)
 
         @BeforeEach
         fun stubLoginResolver() {
-            `when`(loginMemberArgumentResolver.supportsParameter(ktAny())).thenReturn(true)
+            `when`(loginMemberArgumentResolver.supportsParameter(any())).thenReturn(true)
             `when`(
                 loginMemberArgumentResolver.resolveArgument(
-                    ktAny(),
-                    ktAny(),
-                    ktAny(),
-                    ktAny(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
                 ),
-            ).thenReturn(member)
+            ).thenReturn(principal)
         }
 
         @Test
         fun `placeOrder - returns 201 with Location and response body`() {
-            val memberId = 42L
-            val member = Member(id = memberId, name = "Jane", email = "jane@example.com", password = "pw", role = "USER")
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member))
+            val persistedMember =
+                Member(id = principal.id, name = "Jane", email = "jane@example.com", password = "pw", role = "USER")
+            given(memberService.getByIdOrThrow(principal.id)).willReturn(persistedMember)
 
             val req = PlaceOrderRequest(optionId = 1001L, quantity = 2L, currency = "usd", paymentMethod = "pm_card_visa")
             val expected = PlaceOrderResponse(orderId = 555L, paymentStatus = "succeeded", message = "ok")
-            given(orderService.place(member, req)).willReturn(expected)
+            given(orderService.place(persistedMember, req)).willReturn(expected)
 
             mockMvc.perform(
                 post("/orders")
@@ -93,26 +95,10 @@ class OrderControllerTest
         }
 
         @Test
-        fun `placeOrder - member not found returns 400 and does not call service`() {
-            given(memberRepository.findById(42L)).willReturn(Optional.empty())
-
-            val req = PlaceOrderRequest(optionId = 1001L, quantity = 1L, currency = "usd", paymentMethod = "pm_card_visa")
-
-            mockMvc.perform(
-                post("/orders")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsBytes(req)),
-            )
-                .andExpect(status().isBadRequest)
-
-            verifyNoInteractions(orderService)
-        }
-
-        @Test
-        fun `placeOrder - service error returns 400 with message`() {
-            val memberId = 42L
-            val member = Member(id = memberId, name = "Jane", email = "jane@example.com", password = "pw", role = "USER")
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(member))
+        fun `placeOrder - service error returns 5xx with message`() {
+            val persistedMember =
+                Member(id = principal.id, name = "Jane", email = "jane@example.com", password = "pw", role = "USER")
+            given(memberService.getByIdOrThrow(principal.id)).willReturn(persistedMember)
 
             val req =
                 PlaceOrderRequest(
@@ -121,7 +107,7 @@ class OrderControllerTest
                     currency = "usd",
                     paymentMethod = "pm_card_chargeDeclined",
                 )
-            given(orderService.place(member, req)).willThrow(IllegalArgumentException("Payment not approved"))
+            given(orderService.place(persistedMember, req)).willThrow(IllegalArgumentException("Payment not approved"))
 
             mockMvc.perform(
                 post("/orders")
@@ -130,5 +116,46 @@ class OrderControllerTest
             )
                 .andExpect(status().is5xxServerError)
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Payment not approved")))
+        }
+
+        @Test
+        fun `placeOrder - when request body is invalid then 400`() {
+            val badReq =
+                """
+                {
+                  "optionId": 1001,
+                  "quantity": 0,
+                  "currency": "",
+                  "paymentMethod": "pm_card_visa"
+                }
+                """.trimIndent()
+
+            mockMvc.perform(
+                post("/orders")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(badReq),
+            )
+                .andExpect(status().isBadRequest)
+        }
+
+        @Test
+        fun `placeOrder - when member not found then 404`() {
+            val validBody =
+                PlaceOrderRequest(
+                    optionId = 1L,
+                    quantity = 1L,
+                    currency = "usd",
+                    paymentMethod = "pm_card_visa",
+                )
+
+            whenever(memberService.getByIdOrThrow(principal.id))
+                .thenThrow(NoSuchElementException("Member not found"))
+
+            mockMvc.perform(
+                post("/orders")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(validBody)),
+            )
+                .andExpect(status().isNotFound)
         }
     }

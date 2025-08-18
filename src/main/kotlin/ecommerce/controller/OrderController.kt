@@ -4,7 +4,7 @@ import ecommerce.annotations.LoginMember
 import ecommerce.dto.LoggedInMember
 import ecommerce.dto.PlaceOrderRequest
 import ecommerce.dto.PlaceOrderResponse
-import ecommerce.repository.MemberRepositoryJpa
+import ecommerce.service.MemberService
 import ecommerce.service.OrderService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
@@ -18,23 +18,15 @@ import java.net.URI
 @RequestMapping("/orders")
 class OrderController(
     private val orderService: OrderService,
-    private val memberRepository: MemberRepositoryJpa,
+    private val memberService: MemberService,
 ) {
     @PostMapping
     fun placeOrder(
-        @LoginMember member: LoggedInMember,
+        @LoginMember principal: LoggedInMember,
         @Valid @RequestBody req: PlaceOrderRequest,
     ): ResponseEntity<PlaceOrderResponse> {
-        val member =
-            memberRepository.findById(member.id)
-
-        if (member.isEmpty) {
-            return ResponseEntity.badRequest().build()
-        } else {
-            val res = orderService.place(member.get(), req)
-            return ResponseEntity
-                .created(URI.create("/orders/${res.orderId}"))
-                .body(res)
-        }
+        val member = memberService.getByIdOrThrow(principal.id)
+        val res = orderService.place(member, req)
+        return ResponseEntity.created(URI.create("/orders/${res.orderId}")).body(res)
     }
 }

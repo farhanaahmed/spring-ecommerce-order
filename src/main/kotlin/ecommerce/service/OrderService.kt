@@ -104,7 +104,6 @@ class OrderService(
         option.quantity -= requestedQty
         optionRepository.save(option)
 
-        // Remove from cart if present
         cartRepository.findByMemberId(member.id!!)?.let { cart ->
             cartItemRepository.findByCartIdAndProductOptionId(cart.id!!, option.id!!)?.let {
                 cartItemRepository.delete(it)
