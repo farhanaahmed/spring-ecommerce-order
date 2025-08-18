@@ -77,7 +77,7 @@ class StripeClientTest {
 
         assertThat(resp.id).isEqualTo("pi_123")
         assertThat(resp.status).isEqualTo("succeeded")
-        assertThat(resp.client_secret).isEqualTo("pi_123_secret_abc")
+        assertThat(resp.clientSecret).isEqualTo("pi_123_secret_abc")
     }
 
     @Test
