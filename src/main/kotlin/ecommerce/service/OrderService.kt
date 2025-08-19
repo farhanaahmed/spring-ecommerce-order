@@ -17,10 +17,9 @@ import ecommerce.repository.OptionRepositoryJpa
 import ecommerce.repository.OrderItemRepositoryJpa
 import ecommerce.repository.OrderRepositoryJpa
 import ecommerce.repository.PaymentRepositoryJpa
+import ecommerce.util.MoneyUtil
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
-import java.math.BigDecimal
-import java.math.RoundingMode
 import java.time.LocalDateTime
 
 @Service
@@ -45,8 +44,7 @@ class OrderService(
             "Insufficient stock. Available=${option.quantity}, requested=${req.quantity}"
         }
 
-        val amountMinor = toMinorUnits(option.product.price, req.quantity)
-
+        val amountMinor = MoneyUtil.toMinorUnits(option.product.price, req.quantity)
         val stripeRes =
             stripeClient.createAndConfirmPayment(
                 PaymentRequest(amountMinor, req.currency, req.paymentMethod),
@@ -126,11 +124,4 @@ class OrderService(
 
         return order.id!!
     }
-
-    private fun toMinorUnits(
-        unitPrice: Double,
-        qty: Long,
-    ): Long =
-        BigDecimal.valueOf(unitPrice).multiply(BigDecimal.valueOf(qty))
-            .multiply(BigDecimal(100)).setScale(0, RoundingMode.HALF_UP).longValueExact()
 }
