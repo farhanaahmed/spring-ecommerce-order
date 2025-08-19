@@ -35,7 +35,7 @@ class CartItem(
         require(quantity > 0) { "Quantity must be positive" }
     }
 
-    fun increaseQuantity(by: Long) {
-        this.quantity += by
+    fun increaseQuantity(amount: Long) {
+        this.quantity += amount
     }
 }
