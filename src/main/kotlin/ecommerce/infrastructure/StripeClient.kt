@@ -3,6 +3,7 @@ package ecommerce.infrastructure
 import ecommerce.config.StripeProperties
 import ecommerce.dto.PaymentRequest
 import ecommerce.dto.StripeIntentResponse
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
@@ -15,6 +16,7 @@ class StripeClient(
     builder: RestClient.Builder,
 ) {
     private val restClient: RestClient = builder.build()
+    private val log = LoggerFactory.getLogger(javaClass)
 
     fun createAndConfirmPayment(req: PaymentRequest): StripeIntentResponse {
         val body =
@@ -37,9 +39,11 @@ class StripeClient(
                 .toEntity(StripeIntentResponse::class.java)
                 .body ?: throw IllegalArgumentException("Stripe error: empty body")
         } catch (e: RestClientResponseException) {
+            log.error("Stripe API error: status=${e.rawStatusCode}, body=${e.responseBodyAsString}", e)
             val reason = e.responseBodyAsString.take(500)
             throw IllegalArgumentException("Stripe error ${e.rawStatusCode}: $reason")
         } catch (e: Exception) {
+            log.error("Unexpected Stripe client error", e)
             throw IllegalArgumentException("Stripe error: ${e.message}")
         }
     }
