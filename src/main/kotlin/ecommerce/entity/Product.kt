@@ -55,5 +55,5 @@ class Product(
         return false
     }
 
-    override fun hashCode(): Int = id?.hashCode() ?: 31
+    override fun hashCode(): Int = id?.hashCode() ?: super.hashCode()
 }
