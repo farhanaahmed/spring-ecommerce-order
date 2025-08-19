@@ -34,7 +34,7 @@ class CartService(
                 .findByCartIdAndProductOptionId(cartId!!, option.id!!)
 
         if (existing != null) {
-            existing.quantity += quantity
+            existing.increaseQuantity(quantity)
             cartItemRepositoryJpa.save(existing)
         } else {
             val item =
