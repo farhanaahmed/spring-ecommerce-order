@@ -115,7 +115,7 @@ class OrderService(
             ),
         )
 
-        option.quantity -= requestedQty
+        option.decreaseQuantity(requestedQty)
         optionRepository.save(option)
 
         cartRepository.findByMemberId(member.id!!)?.let { cart ->
