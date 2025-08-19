@@ -55,12 +55,21 @@ class OrderService(
             throw IllegalArgumentException("Payment not approved (status=${stripeRes.status}).")
         }
 
-        val orderId = persistAfterStripeSuccess(member, option.id!!, req.quantity, amountMinor, req.currency, stripeRes, req.paymentMethod)
+        val orderId =
+            persistAfterStripeSuccess(
+                member,
+                option.id!!,
+                req.quantity,
+                amountMinor,
+                req.currency,
+                stripeRes,
+                req.paymentMethod,
+            )
         return PlaceOrderResponse(orderId, stripeRes.status, "Order placed and paid successfully.")
     }
 
     @Transactional
-    protected fun persistAfterStripeSuccess(
+    fun persistAfterStripeSuccess(
         member: Member,
         optionId: Long,
         requestedQty: Long,
