@@ -89,6 +89,9 @@ class OrderService(
                 productOption = option,
                 quantity = requestedQty.toInt(),
                 price = option.product.price,
+                productName = option.product.name,
+                optionName = option.name,
+                productImageUrl = option.product.imageUrl,
             ),
         )
 

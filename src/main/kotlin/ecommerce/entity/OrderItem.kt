@@ -24,4 +24,10 @@ class OrderItem(
     val quantity: Int,
     @Column(nullable = false)
     val price: Double,
+    @Column(name = "product_name", nullable = false)
+    val productName: String,
+    @Column(name = "option_name", nullable = false)
+    val optionName: String,
+    @Column(name = "product_image_url", nullable = false)
+    val productImageUrl: String,
 )
